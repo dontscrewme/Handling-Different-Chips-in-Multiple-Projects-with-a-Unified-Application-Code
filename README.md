@@ -10,4 +10,15 @@ The solution
 1. Using Conditional Compilation
 One effective way to handle this scenario is to use conditional compilation. By using preprocessor directives, we can select which chip to use at compile time, ensuring that the application code stays consistent and simple.
 
+Pros:
+
+Simple to understand and implement.
+Efficient: The compiler only includes the code that's needed for the specific chip, resulting in optimized code size and execution speed.
+No runtime overhead: No function pointers or extra layers of indirection at runtime.
+
+Cons:
+
+Less flexible if you needed to switch chips at runtime
+agent.c still contains chip-specific code, making it slightly less "clean" in terms of separation of concerns, but it's well-contained within #ifdef blocks.
+
  
