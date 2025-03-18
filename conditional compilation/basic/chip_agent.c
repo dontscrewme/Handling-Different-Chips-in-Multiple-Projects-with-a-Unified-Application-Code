@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "chip_agent.h"
 
-#ifdef CHIP_A
+#if defined(CHIP_A)
 #include "chip_a.h"
 #elif defined(CHIP_B)
 #include "chip_b.h"
