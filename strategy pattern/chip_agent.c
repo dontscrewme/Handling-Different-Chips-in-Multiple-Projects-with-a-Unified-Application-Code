@@ -27,6 +27,52 @@ struct chip_agent* agent_create(void)
     return agent;
 }
 
+static void init_network_module(struct chip_agent* agent);
+static void start_network_module(struct chip_agent* agent);
+static void stop_network_module(struct chip_agent* agent);
+static void shutdown_network_module(struct chip_agent* agent);
+
+void agent_destroy(struct chip_agent* agent)
+{
+    if (agent == NULL)
+    {
+        return;
+    }
+
+    if (agent->current_chip != UNKNOWN_CHIP)
+    {
+        stop_network_module(agent);
+        shutdown_network_module(agent);
+    }
+
+    free(agent);
+}
+
+void agent_set(struct chip_agent* agent, enum chips chip)
+{
+    if (agent == NULL)
+    {
+        return;
+    }
+
+    if (agent->current_chip != UNKNOWN_CHIP)
+    {
+        stop_network_module(agent);
+        shutdown_network_module(agent);
+    }
+
+    agent->current_chip = chip;
+    init_network_module(agent);
+    start_network_module(agent);
+}
+
+void agent_run_network(struct chip_agent* agent)
+{
+    agent = agent; //supress compiler warning
+    //implementation
+    return;
+}
+
 static void init_network_module(struct chip_agent* agent)
 {
     if (agent->current_chip == QUALCOMM_DRAGONWING)
@@ -115,42 +161,6 @@ static void shutdown_network_module(struct chip_agent* agent)
         
     }
 }
-
-void agent_set(struct chip_agent* agent, enum chips chip)
-{
-    if (agent == NULL)
-    {
-        return;
-    }
-
-    if (agent->current_chip != UNKNOWN_CHIP)
-    {
-        stop_network_module(agent);
-        shutdown_network_module(agent);
-    }
-
-    agent->current_chip = chip;
-    init_network_module(agent);
-    start_network_module(agent);
-}
-
-void agent_destroy(struct chip_agent* agent)
-{
-    if (agent == NULL)
-    {
-        return;
-    }
-
-    free(agent);
-}
-
-void agent_run_network(struct chip_agent* agent)
-{
-    agent = agent; //supress compiler warning
-    //implementation
-    return;
-}
-
 
 
 
