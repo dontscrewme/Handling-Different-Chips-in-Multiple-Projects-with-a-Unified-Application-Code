@@ -5,7 +5,9 @@ This repository demonstrates three methods for managing multiple chip implementa
 
 ## Overview of the Three Methods
 Method 1 – Compile-Time Selection (Monolithic)
+
 Method 2 – Runtime Selection with a Union
+
 Method 3 – Adapter/Registry (Plugin-Style)
 
 Below is a detailed explanation of each approach, including its rationale, pros, and cons.
