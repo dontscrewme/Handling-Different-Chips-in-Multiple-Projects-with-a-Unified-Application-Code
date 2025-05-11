@@ -25,7 +25,7 @@ static void stop(void* chip) {
     printf("dragonwing_NPA7 stop!\n");
 }
 
-const ChipInterface CHIP_A_INTERFACE = {
+static const ChipInterface CHIP_A_INTERFACE = {
     .data_size = sizeof(struct dragonwing_NPA7),
     .init = init,
     .shutdown = shutdown,
