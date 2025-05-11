@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "chip_interface.h"
+#include "chip_a_adapter.h
 #include "chip_a.h"
 
 
