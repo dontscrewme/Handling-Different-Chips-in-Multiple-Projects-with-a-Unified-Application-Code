@@ -39,3 +39,10 @@ static void chip_a_init_module(void)
 {
     agent_register_chip("QUALCOMM_DRAGONWING", &CHIP_A_INTERFACE);
 }
+
+/* 模擬 Linux kernel 的 module_exit() */
+__attribute__((destructor))
+static void chip_a_exit_module(void)
+{
+    agent_unregister_chip("QUALCOMM_DRAGONWING");
+}

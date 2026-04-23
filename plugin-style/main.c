@@ -6,6 +6,5 @@ int main()
 	agent_set(agent);
     agent_run_network(agent);
     agent_destroy(agent);
-	agent_cleanup_registry();
     return 0;
 }

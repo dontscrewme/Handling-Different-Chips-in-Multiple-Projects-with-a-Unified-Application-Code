@@ -36,6 +36,16 @@ void agent_register_chip(char* name, const ChipInterface* interface) {
     HASH_ADD_KEYPTR(hh, chip_registry, entry->name, strlen(name), entry);
 }
 
+void agent_unregister_chip(char* name) {
+    ChipRegistryEntry* entry = NULL;
+    HASH_FIND_STR(chip_registry, name, entry);
+    if (entry != NULL) {
+        HASH_DEL(chip_registry, entry);
+        free((char*)entry->name);
+        free(entry);
+    }
+}
+
 struct chip_agent* agent_create(char* name) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
@@ -62,17 +72,6 @@ void agent_destroy(struct chip_agent* agent)
     free(agent->chip_data);
     free(agent);
 }
-
-void agent_cleanup_registry(void)
-{
-    ChipRegistryEntry* entry, *tmp;
-    HASH_ITER(hh, chip_registry, entry, tmp) {
-        HASH_DEL(chip_registry, entry);
-        free((char*)entry->name);
-        free(entry);
-    }
-}
-
 
 void agent_set(struct chip_agent* agent)
 {

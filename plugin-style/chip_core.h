@@ -25,7 +25,7 @@ struct chip_agent;
  * --------------------------------------------------------- */
 
 void agent_register_chip(char* name, const ChipInterface* interface);
-void agent_cleanup_registry(void);
+void agent_unregister_chip(char* name);
 
 struct chip_agent* agent_create(char* name);
 void agent_destroy(struct chip_agent* agent);
