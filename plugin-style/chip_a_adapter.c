@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "chip_a_adapter.h"
+#include "chip_core.h"
 #include "chip_a.h"
 
 
@@ -33,12 +33,9 @@ static const ChipInterface CHIP_A_INTERFACE = {
     .stop = stop
 };
 
-void chip_a_adapter_register(char* name, ChipRegisterCallback callback)
+/* 模擬 Linux kernel 的 module_init() */
+__attribute__((constructor))
+static void chip_a_init_module(void)
 {
-    if (callback == NULL)
-    {
-        return;
-    }
-
-    callback(name, &CHIP_A_INTERFACE);
+    agent_register_chip("QUALCOMM_DRAGONWING", &CHIP_A_INTERFACE);
 }

@@ -17,8 +17,6 @@ typedef struct {
     ChipFunc stop;
 } ChipInterface;
 
-typedef void (*ChipRegisterCallback)(char* name, const ChipInterface* interface);
-
 /* 提前宣告不透明結構 (Opaque pointer)，隱藏內部實作細節 */
 struct chip_agent; 
 
