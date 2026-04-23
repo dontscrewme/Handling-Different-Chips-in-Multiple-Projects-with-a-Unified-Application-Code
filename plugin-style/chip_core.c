@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "chip_agent.h"
+#include "chip_core.h"
 #include "uthash.h"
 
 #ifndef _POSIX_C_SOURCE

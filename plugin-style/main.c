@@ -1,4 +1,4 @@
-#include "chip_agent.h"
+#include "chip_core.h"
 #include "chip_a_adapter.h"
 
 int main()
