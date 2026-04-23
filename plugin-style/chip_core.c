@@ -8,11 +8,6 @@
 #define _POSIX_C_SOURCE 200809L  // Enable POSIX functions
 #endif
 
-struct chip_agent {
-    void* chip_data;
-    const ChipInterface* interface;
-};
-
 typedef struct {
     char* name;
     const ChipInterface* interface;
@@ -46,6 +41,19 @@ void agent_unregister_chip(char* name) {
     }
 }
 
+struct chip_agent {
+    void* drvdata; /* 替代原先的 chip_data */
+    const ChipInterface* interface;
+};
+
+void agent_set_drvdata(struct chip_agent* agent, void* data) {
+    if (agent) agent->drvdata = data;
+}
+
+void* agent_get_drvdata(struct chip_agent* agent) {
+    return agent ? agent->drvdata : NULL;
+}
+
 struct chip_agent* agent_create(char* name) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
@@ -56,7 +64,7 @@ struct chip_agent* agent_create(char* name) {
 
     struct chip_agent* agent = malloc(sizeof(struct chip_agent));
     agent->interface = entry->interface;
-    agent->chip_data = malloc(entry->interface->data_size);
+    agent->drvdata = NULL;
     return agent;
 }
 
@@ -67,24 +75,27 @@ void agent_destroy(struct chip_agent* agent)
         return;
     }
 
-    agent->interface->stop(agent->chip_data);
-    agent->interface->shutdown(agent->chip_data);
-    free(agent->chip_data);
+    agent->interface->stop(agent);
+    agent->interface->remove(agent);
     free(agent);
 }
 
-void agent_set(struct chip_agent* agent)
+int agent_set(struct chip_agent* agent)
 {
     if (agent == NULL)
     {
-        return;
+        return -1;
     }
 
-    agent->interface->init(agent->chip_data);
-    agent->interface->start(agent->chip_data);
+    int ret = agent->interface->probe(agent);
+    if (ret != 0) {
+        /* probe 失敗，直接返回錯誤碼，不執行 start */
+        return ret; 
+    }
+
+    agent->interface->start(agent);
+    return 0;
 }
-
-
 
 void agent_run_network(struct chip_agent* agent)
 {

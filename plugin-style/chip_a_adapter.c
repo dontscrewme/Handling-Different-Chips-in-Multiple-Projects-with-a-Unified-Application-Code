@@ -1,34 +1,51 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "chip_core.h"
 #include "chip_a.h"
 
+static int probe(struct chip_agent* agent) {
+    /* Driver 自行配置記憶體 */
+    struct dragonwing_NPA7* chip = malloc(sizeof(struct dragonwing_NPA7));
+    if (chip == NULL) {
+        return -1;
+    }
 
-static void init(void* chip) {
-    dragonwing_NPA7_init((struct dragonwing_NPA7*)chip);
+    dragonwing_NPA7_init(chip);
+    /* 將配置好的記憶體綁定至核心 agent 結構中 */
+    agent_set_drvdata(agent, chip);
+    return 0;
 }
 
-static void shutdown(void* chip) {
-    dragonwing_NPA7_shutdown((struct dragonwing_NPA7*)chip);
+static void my_remove(struct chip_agent* agent) {
+    /* 取回硬體物件指標 */
+    struct dragonwing_NPA7* chip = agent_get_drvdata(agent);
+    if (chip != NULL) {
+        dragonwing_NPA7_shutdown(chip);
+        /* Driver 自行釋放記憶體 */
+        free(chip);
+    }
 }
 
-static void start(void* chip) {
-    struct dragonwing_NPA7* c = (struct dragonwing_NPA7*)chip;
-    dragonwing_NPA7_set_register1(c, 1);
-    dragonwing_NPA7_set_register2(c, 1);
+static void start(struct chip_agent* agent) {
+    struct dragonwing_NPA7* chip = agent_get_drvdata(agent);
+    if (!chip) return;
+    dragonwing_NPA7_set_register1(chip, 1);
+    dragonwing_NPA7_set_register2(chip, 1);
     printf("dragonwing_NPA7 starts!\n");
 }
 
-static void stop(void* chip) {
-    struct dragonwing_NPA7* c = (struct dragonwing_NPA7*)chip;
-    dragonwing_NPA7_set_register1(c, 0);
-    dragonwing_NPA7_set_register2(c, 0);
+static void stop(struct chip_agent* agent) {
+    struct dragonwing_NPA7* chip = agent_get_drvdata(agent);
+    if (!chip) return;
+
+    dragonwing_NPA7_set_register1(chip, 0);
+    dragonwing_NPA7_set_register2(chip, 0);
     printf("dragonwing_NPA7 stop!\n");
 }
 
 static const ChipInterface CHIP_A_INTERFACE = {
-    .data_size = sizeof(struct dragonwing_NPA7),
-    .init = init,
-    .shutdown = shutdown,
+    .probe = probe,
+    .remove = my_remove,
     .start = start,
     .stop = stop
 };
