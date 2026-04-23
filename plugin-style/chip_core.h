@@ -19,17 +19,14 @@ typedef struct {
 } ChipInterface;
 
 
-/* ---------------------------------------------------------
- * 核心 API 宣告 (對應 Linux 的 i2c-core 提供的方法)
- * --------------------------------------------------------- */
+/* 驅動端 (Driver) 註冊介面 */
+void agent_register_driver(const char* name, const ChipInterface* interface);
+void agent_unregister_driver(const char* name);
 
-void agent_register_chip(char* name, const ChipInterface* interface);
-void agent_unregister_chip(char* name);
+/* 設備端 (Device) 註冊介面 (模擬設備樹或 i2c_board_info 實例化) */
+struct chip_agent* agent_register_device(const char* name);
+void agent_unregister_device(struct chip_agent* agent);
 
-struct chip_agent* agent_create(char* name);
-void agent_destroy(struct chip_agent* agent);
-
-int agent_set(struct chip_agent* agent);
 void agent_run_network(struct chip_agent* agent);
 
 /* 新增：供 Driver 端設定與取得私有資料的 API (對應 dev_set_drvdata) */

@@ -54,12 +54,12 @@ static const ChipInterface CHIP_A_INTERFACE = {
 __attribute__((constructor))
 static void chip_a_init_module(void)
 {
-    agent_register_chip("QUALCOMM_DRAGONWING", &CHIP_A_INTERFACE);
+    agent_register_driver("QUALCOMM_DRAGONWING", &CHIP_A_INTERFACE);
 }
 
 /* 模擬 Linux kernel 的 module_exit() */
 __attribute__((destructor))
 static void chip_a_exit_module(void)
 {
-    agent_unregister_chip("QUALCOMM_DRAGONWING");
+    agent_unregister_driver("QUALCOMM_DRAGONWING");
 }

@@ -16,7 +16,7 @@ typedef struct {
 
 static ChipRegistryEntry* chip_registry = NULL;
 
-void agent_register_chip(char* name, const ChipInterface* interface) {
+void agent_register_driver(const char* name, const ChipInterface* interface) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry != NULL)
@@ -31,7 +31,7 @@ void agent_register_chip(char* name, const ChipInterface* interface) {
     HASH_ADD_KEYPTR(hh, chip_registry, entry->name, strlen(name), entry);
 }
 
-void agent_unregister_chip(char* name) {
+void agent_unregister_driver(const char* name) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry != NULL) {
@@ -54,7 +54,7 @@ void* agent_get_drvdata(struct chip_agent* agent) {
     return agent ? agent->drvdata : NULL;
 }
 
-struct chip_agent* agent_create(char* name) {
+struct chip_agent* agent_register_device(const char* name) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry == NULL)
@@ -65,10 +65,20 @@ struct chip_agent* agent_create(char* name) {
     struct chip_agent* agent = malloc(sizeof(struct chip_agent));
     agent->interface = entry->interface;
     agent->drvdata = NULL;
+
+    /* 核心自動觸發 probe，完成綁定 */
+    if (agent->interface->probe(agent) != 0) {
+        free(agent);
+        return NULL;
+    }
+
+    /* 模擬硬體綁定後自動啟動 (根據實際需求決定是否在此呼叫 start) */
+    agent->interface->start(agent);
+
     return agent;
 }
 
-void agent_destroy(struct chip_agent* agent)
+void agent_unregister_device(struct chip_agent* agent)
 {
     if (agent == NULL)
     {
