@@ -96,23 +96,6 @@ void agent_unregister_device(struct chip_client* agent)
     free(agent);
 }
 
-int agent_set(struct chip_client* agent)
-{
-    if (agent == NULL)
-    {
-        return -1;
-    }
-
-    int ret = agent->interface->probe(agent);
-    if (ret != 0) {
-        /* probe 失敗，直接返回錯誤碼，不執行 start */
-        return ret; 
-    }
-
-    agent->interface->start(agent);
-    return 0;
-}
-
 void agent_run_network(struct chip_client* agent)
 {
     agent = agent; //supress compiler warning
