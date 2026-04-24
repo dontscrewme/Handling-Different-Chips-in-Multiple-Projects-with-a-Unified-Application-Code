@@ -42,9 +42,14 @@ void agent_unregister_driver(const char* name) {
 }
 
 struct chip_client {
-    void* drvdata; /* 替代原先的 chip_data */
+    void* drvdata;
+    void* dev_config; /* 模擬指向 device_node 的指標 */
     const struct chip_driver* interface;
 };
+
+void* agent_get_config(struct chip_client* agent) {
+    return agent ? agent->dev_config : NULL;
+}
 
 void agent_set_drvdata(struct chip_client* agent, void* data) {
     if (agent) agent->drvdata = data;
@@ -54,7 +59,7 @@ void* agent_get_drvdata(struct chip_client* agent) {
     return agent ? agent->drvdata : NULL;
 }
 
-struct chip_client* agent_register_device(const char* name) {
+struct chip_client* agent_register_device(const char* name, void* dev_config) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry == NULL)
@@ -65,6 +70,7 @@ struct chip_client* agent_register_device(const char* name) {
     struct chip_client* agent = malloc(sizeof(struct chip_client));
     agent->interface = entry->interface;
     agent->drvdata = NULL;
+    agent->dev_config = dev_config; /* 綁定 DT 設定資料 */
 
     /* 核心自動觸發 probe，完成綁定 */
     if (agent->interface->probe(agent) != 0) {

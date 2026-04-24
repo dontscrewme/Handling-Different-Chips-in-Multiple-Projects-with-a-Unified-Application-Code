@@ -3,6 +3,13 @@
 #include "chip_core.h"
 #include "chip_a.h"
 
+
+/* 定義驅動程式預期的屬性資料結構 (模擬 DT 中的 properties) */
+struct chip_a_config {
+    int default_reg1;
+    int default_reg2;
+};
+
 static int probe(struct chip_client* agent) {
     /* Driver 自行配置記憶體 */
     struct dragonwing_NPA7* chip = malloc(sizeof(struct dragonwing_NPA7));
@@ -11,6 +18,19 @@ static int probe(struct chip_client* agent) {
     }
 
     dragonwing_NPA7_init(chip);
+
+    /* 模擬透過核心 API 讀取 DT 屬性 */
+    struct chip_a_config* config = (struct chip_a_config*)agent_get_config(agent);
+    if (config != NULL) {
+        /* 根據傳入的設定檔修改硬體初始狀態 */
+        dragonwing_NPA7_set_register1(chip, config->default_reg1);
+        dragonwing_NPA7_set_register2(chip, config->default_reg2);
+        printf("Probe with config: reg1=%d, reg2=%d\n", config->default_reg1, config->default_reg2);
+    } else {
+        /* 缺乏設定檔時的預設行為 */
+        dragonwing_NPA7_set_register1(chip, 0);
+        dragonwing_NPA7_set_register2(chip, 0);
+    }
     /* 將配置好的記憶體綁定至核心 agent 結構中 */
     agent_set_drvdata(agent, chip);
     return 0;
