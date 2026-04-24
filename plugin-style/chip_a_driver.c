@@ -63,7 +63,7 @@ static void stop(struct chip_client* agent) {
     printf("dragonwing_NPA7 stop!\n");
 }
 
-static const struct chip_driver CHIP_A_INTERFACE = {
+static const struct chip_driver chip_a_driver = {
     .probe = probe,
     .remove = my_remove,
     .start = start,
@@ -74,7 +74,7 @@ static const struct chip_driver CHIP_A_INTERFACE = {
 __attribute__((constructor))
 static void chip_a_init_module(void)
 {
-    chip_register_driver("QUALCOMM_DRAGONWING", &CHIP_A_INTERFACE);
+    chip_register_driver("QUALCOMM_DRAGONWING", &chip_a_driver);
 }
 
 /* 模擬 Linux kernel 的 module_exit() */
