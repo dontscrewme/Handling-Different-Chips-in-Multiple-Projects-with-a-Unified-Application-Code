@@ -10,13 +10,13 @@
 
 typedef struct {
     char* name;
-    const ChipInterface* interface;
+    const struct chip_driver* interface;
     UT_hash_handle hh;
 } ChipRegistryEntry;
 
 static ChipRegistryEntry* chip_registry = NULL;
 
-void agent_register_driver(const char* name, const ChipInterface* interface) {
+void agent_register_driver(const char* name, const struct chip_driver* interface) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry != NULL)
@@ -41,20 +41,20 @@ void agent_unregister_driver(const char* name) {
     }
 }
 
-struct chip_agent {
+struct chip_client {
     void* drvdata; /* 替代原先的 chip_data */
-    const ChipInterface* interface;
+    const struct chip_driver* interface;
 };
 
-void agent_set_drvdata(struct chip_agent* agent, void* data) {
+void agent_set_drvdata(struct chip_client* agent, void* data) {
     if (agent) agent->drvdata = data;
 }
 
-void* agent_get_drvdata(struct chip_agent* agent) {
+void* agent_get_drvdata(struct chip_client* agent) {
     return agent ? agent->drvdata : NULL;
 }
 
-struct chip_agent* agent_register_device(const char* name) {
+struct chip_client* agent_register_device(const char* name) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry == NULL)
@@ -62,7 +62,7 @@ struct chip_agent* agent_register_device(const char* name) {
         return NULL;
     }
 
-    struct chip_agent* agent = malloc(sizeof(struct chip_agent));
+    struct chip_client* agent = malloc(sizeof(struct chip_client));
     agent->interface = entry->interface;
     agent->drvdata = NULL;
 
@@ -78,7 +78,7 @@ struct chip_agent* agent_register_device(const char* name) {
     return agent;
 }
 
-void agent_unregister_device(struct chip_agent* agent)
+void agent_unregister_device(struct chip_client* agent)
 {
     if (agent == NULL)
     {
@@ -90,7 +90,7 @@ void agent_unregister_device(struct chip_agent* agent)
     free(agent);
 }
 
-int agent_set(struct chip_agent* agent)
+int agent_set(struct chip_client* agent)
 {
     if (agent == NULL)
     {
@@ -107,7 +107,7 @@ int agent_set(struct chip_agent* agent)
     return 0;
 }
 
-void agent_run_network(struct chip_agent* agent)
+void agent_run_network(struct chip_client* agent)
 {
     agent = agent; //supress compiler warning
     //implementation
