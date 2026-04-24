@@ -10,7 +10,7 @@ struct chip_a_config {
     int default_reg2;
 };
 
-static int probe(struct chip_client* agent) {
+static int chip_a_probe(struct chip_client* agent) {
     /* Driver 自行配置記憶體 */
     struct dragonwing_NPA7* chip = malloc(sizeof(struct dragonwing_NPA7));
     if (chip == NULL) {
@@ -36,7 +36,7 @@ static int probe(struct chip_client* agent) {
     return 0;
 }
 
-static void my_remove(struct chip_client* agent) {
+static void chip_a_remove(struct chip_client* agent) {
     /* 取回硬體物件指標 */
     struct dragonwing_NPA7* chip = chip_get_drvdata(agent);
     if (chip != NULL) {
@@ -46,7 +46,7 @@ static void my_remove(struct chip_client* agent) {
     }
 }
 
-static void start(struct chip_client* agent) {
+static void chip_a_start(struct chip_client* agent) {
     struct dragonwing_NPA7* chip = chip_get_drvdata(agent);
     if (!chip) return;
     dragonwing_NPA7_set_register1(chip, 1);
@@ -54,7 +54,7 @@ static void start(struct chip_client* agent) {
     printf("dragonwing_NPA7 starts!\n");
 }
 
-static void stop(struct chip_client* agent) {
+static void chip_a_stop(struct chip_client* agent) {
     struct dragonwing_NPA7* chip = chip_get_drvdata(agent);
     if (!chip) return;
 
@@ -64,10 +64,10 @@ static void stop(struct chip_client* agent) {
 }
 
 static const struct chip_driver chip_a_driver = {
-    .probe = probe,
-    .remove = my_remove,
-    .start = start,
-    .stop = stop
+    .probe = chip_a_probe,
+    .remove = chip_a_remove,
+    .start = chip_a_start,
+    .stop = chip_a_stop
 };
 
 /* 模擬 Linux kernel 的 module_init() */
