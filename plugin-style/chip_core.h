@@ -6,18 +6,12 @@
 /* 提前宣告不透明結構 (Opaque pointer)，隱藏內部實作細節 */
 struct chip_client; 
 
-typedef int (*ChipProbe)(struct chip_client* agent);
-typedef void (*ChipRemove)(struct chip_client* agent);
-typedef void (*ChipOp)(struct chip_client* agent);
-
 struct chip_driver {
-    /* 刪除 data_size，框架不需知道硬體私有資料大小 */
-    ChipProbe probe;
-    ChipRemove remove;
-    ChipOp start;
-    ChipOp stop;
+    int (*probe)(struct chip_client* agent);
+    void (*remove)(struct chip_client* agent);
+    void (*start)(struct chip_client* agent);
+    void (*stop)(struct chip_client* agent);
 };
-
 
 /* 驅動端 (Driver) 註冊介面 */
 void agent_register_driver(const char* name, const struct chip_driver* interface);
