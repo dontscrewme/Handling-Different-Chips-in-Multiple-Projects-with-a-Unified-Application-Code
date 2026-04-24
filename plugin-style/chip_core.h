@@ -13,20 +13,20 @@ struct chip_driver {
     void (*stop)(struct chip_client* agent);
 };
 
-void* agent_get_config(struct chip_client* agent);
+void* chip_get_config(struct chip_client* agent);
 
 /* 驅動端 (Driver) 註冊介面 */
-void agent_register_driver(const char* name, const struct chip_driver* interface);
-void agent_unregister_driver(const char* name);
+void chip_register_driver(const char* name, const struct chip_driver* interface);
+void chip_unregister_driver(const char* name);
 
 /* 設備端 (Device) 註冊介面 (模擬設備樹或 i2c_board_info 實例化) */
-struct chip_client* agent_register_device(const char* name, void* dev_config);
-void agent_unregister_device(struct chip_client* agent);
+struct chip_client* chip_register_device(const char* name, void* dev_config);
+void chip_unregister_device(struct chip_client* agent);
 
-void agent_run_network(struct chip_client* agent);
+void chip_run_network(struct chip_client* agent);
 
 /* 新增：供 Driver 端設定與取得私有資料的 API (對應 dev_set_drvdata) */
-void agent_set_drvdata(struct chip_client* agent, void* data);
-void* agent_get_drvdata(struct chip_client* agent);
+void chip_set_drvdata(struct chip_client* agent, void* data);
+void* chip_get_drvdata(struct chip_client* agent);
 
 #endif /* CHIP_CORE_H */

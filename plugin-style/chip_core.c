@@ -16,7 +16,7 @@ typedef struct {
 
 static ChipRegistryEntry* chip_registry = NULL;
 
-void agent_register_driver(const char* name, const struct chip_driver* interface) {
+void chip_register_driver(const char* name, const struct chip_driver* interface) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry != NULL)
@@ -31,7 +31,7 @@ void agent_register_driver(const char* name, const struct chip_driver* interface
     HASH_ADD_KEYPTR(hh, chip_registry, entry->name, strlen(name), entry);
 }
 
-void agent_unregister_driver(const char* name) {
+void chip_unregister_driver(const char* name) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry != NULL) {
@@ -47,19 +47,19 @@ struct chip_client {
     const struct chip_driver* interface;
 };
 
-void* agent_get_config(struct chip_client* agent) {
+void* chip_get_config(struct chip_client* agent) {
     return agent ? agent->dev_config : NULL;
 }
 
-void agent_set_drvdata(struct chip_client* agent, void* data) {
+void chip_set_drvdata(struct chip_client* agent, void* data) {
     if (agent) agent->drvdata = data;
 }
 
-void* agent_get_drvdata(struct chip_client* agent) {
+void* chip_get_drvdata(struct chip_client* agent) {
     return agent ? agent->drvdata : NULL;
 }
 
-struct chip_client* agent_register_device(const char* name, void* dev_config) {
+struct chip_client* chip_register_device(const char* name, void* dev_config) {
     ChipRegistryEntry* entry = NULL;
     HASH_FIND_STR(chip_registry, name, entry);
     if (entry == NULL)
@@ -84,7 +84,7 @@ struct chip_client* agent_register_device(const char* name, void* dev_config) {
     return agent;
 }
 
-void agent_unregister_device(struct chip_client* agent)
+void chip_unregister_device(struct chip_client* agent)
 {
     if (agent == NULL)
     {
@@ -96,7 +96,7 @@ void agent_unregister_device(struct chip_client* agent)
     free(agent);
 }
 
-void agent_run_network(struct chip_client* agent)
+void chip_run_network(struct chip_client* agent)
 {
     agent = agent; //supress compiler warning
     //implementation

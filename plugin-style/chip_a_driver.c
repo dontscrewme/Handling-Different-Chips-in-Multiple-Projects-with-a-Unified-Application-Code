@@ -20,7 +20,7 @@ static int probe(struct chip_client* agent) {
     dragonwing_NPA7_init(chip);
 
     /* 模擬透過核心 API 讀取 DT 屬性 */
-    struct chip_a_config* config = (struct chip_a_config*)agent_get_config(agent);
+    struct chip_a_config* config = (struct chip_a_config*)chip_get_config(agent);
     if (config != NULL) {
         /* 根據傳入的設定檔修改硬體初始狀態 */
         dragonwing_NPA7_set_register1(chip, config->default_reg1);
@@ -32,13 +32,13 @@ static int probe(struct chip_client* agent) {
         dragonwing_NPA7_set_register2(chip, 0);
     }
     /* 將配置好的記憶體綁定至核心 agent 結構中 */
-    agent_set_drvdata(agent, chip);
+    chip_set_drvdata(agent, chip);
     return 0;
 }
 
 static void my_remove(struct chip_client* agent) {
     /* 取回硬體物件指標 */
-    struct dragonwing_NPA7* chip = agent_get_drvdata(agent);
+    struct dragonwing_NPA7* chip = chip_get_drvdata(agent);
     if (chip != NULL) {
         dragonwing_NPA7_shutdown(chip);
         /* Driver 自行釋放記憶體 */
@@ -47,7 +47,7 @@ static void my_remove(struct chip_client* agent) {
 }
 
 static void start(struct chip_client* agent) {
-    struct dragonwing_NPA7* chip = agent_get_drvdata(agent);
+    struct dragonwing_NPA7* chip = chip_get_drvdata(agent);
     if (!chip) return;
     dragonwing_NPA7_set_register1(chip, 1);
     dragonwing_NPA7_set_register2(chip, 1);
@@ -55,7 +55,7 @@ static void start(struct chip_client* agent) {
 }
 
 static void stop(struct chip_client* agent) {
-    struct dragonwing_NPA7* chip = agent_get_drvdata(agent);
+    struct dragonwing_NPA7* chip = chip_get_drvdata(agent);
     if (!chip) return;
 
     dragonwing_NPA7_set_register1(chip, 0);
@@ -74,12 +74,12 @@ static const struct chip_driver CHIP_A_INTERFACE = {
 __attribute__((constructor))
 static void chip_a_init_module(void)
 {
-    agent_register_driver("QUALCOMM_DRAGONWING", &CHIP_A_INTERFACE);
+    chip_register_driver("QUALCOMM_DRAGONWING", &CHIP_A_INTERFACE);
 }
 
 /* 模擬 Linux kernel 的 module_exit() */
 __attribute__((destructor))
 static void chip_a_exit_module(void)
 {
-    agent_unregister_driver("QUALCOMM_DRAGONWING");
+    chip_unregister_driver("QUALCOMM_DRAGONWING");
 }
